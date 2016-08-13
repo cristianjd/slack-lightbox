@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // initialization
   var API_KEY = '2b7873498ef5d013f601c53d9dff05f2';
   var extras = '&extras=url_t,url_m,url_o';
-  var url = 'https://api.flickr.com/services/rest/?method=flickr.photos.getRecent&format=json&nojsoncallback=1&api_key=' +  API_KEY + extras;
+  var url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&per_page=100&text=olympics&api_key=' +  API_KEY + extras;
   var apiImages = [];
   var grid = document.querySelector('.grid');
   var request = new XMLHttpRequest();
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var selectImage = function (index) {
     var image = apiImages[index];
     lightboxImage.src = image.url_m || image.url_o;
-    lightboxImage.alt = image.title;
+    lightboxImage.alt = image.title.substr(0, 100);
     selectedIndex = index;
 
     if (!lightboxEnabled) {
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   lightboxBackdrop.addEventListener('click', function (ev) {
-    if (ev.target === this) {
+    if (ev.target === this || ev.target.parentNode === this) {
       disableLightBox();
     }
   });

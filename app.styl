@@ -1,18 +1,30 @@
+// normalize
 body {
   margin: 0;
 }
+
 * {
   box-sizing: border-box;
 }
+
+// variables
+$tile-color = #FFFAFB;
+$color-2 = #7DE2D1;
+$color-3 = #2B2C28;
+$header-color = #339989;
+$text-color = #2B2C28;
+$box-shadow = 6px 10px 28px 0px rgba(0,0,0,0.5);
+
 .body {
-  color: #2b2c28;
+  color: $text-color;
 }
+
 .header {
   font-size: 24px;
   text-align: center;
-  background: #339989;
-  border-bottom: 1px solid #2b2c28;
-  box-shadow: 6px 10px 28px 0px rgba(0,0,0,0.5);
+  background: $header-color;
+  border-bottom: 1px solid $text-color;
+  box-shadow: $box-shadow;
   position: fixed;
   z-index: 1;
   height: 36px;
@@ -21,18 +33,22 @@ body {
   left: 0;
   right: 0;
 }
+
 .content {
-  background: #fffafb;
-  padding: 41px 10px 5px;
+  background: $tile-color;
+  padding: 5px + 36px 10px 5px;
 }
+
 .grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
 }
+
 .grid.loading {
   display: none;
 }
+
 .image-tile {
   display: flex;
   justify-content: center;
@@ -40,62 +56,74 @@ body {
   height: 110px;
   width: 110px;
   cursor: pointer;
-  background: #fffafb;
+  background: $tile-color;
   border-radius: 4px;
   margin: 5px;
-  box-shadow: 6px 10px 28px 0px rgba(0,0,0,0.5);
+  box-shadow: $box-shadow;
 }
+
 .image-container {
   width: 668px;
   height: 500px;
+
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between;;
   align-items: center;
 }
+
 img {
   max-width: 500px;
   max-height: 500px;
   transition: opacity 0.3s;
 }
+
 .image-container img {
   box-shadow: 6px 10px 28px 10px rgba(0,0,0,0.5);
 }
+
 .hidden {
   opacity: 0;
 }
+
 .body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
 }
+
 .content {
   flex: 1;
 }
+
 .footer {
   font-size: 12px;
   text-align: center;
-  background: #339989;
-  border-top: 1px solid #2b2c28;
+  background: $header-color;
+  border-top: 1px solid $text-color;
 }
+
 .lightbox-backdrop:not(.active) {
   display: none;
 }
+
 .lightbox-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0,0,0,0.8);
+
+  background: rgba(0, 0, 0, 0.8);
   min-width: 668px;
 }
-.prev,
-.next {
+
+.prev, .next {
   font-size: 30px;
-  background: #fffafb;
+  background: $tile-color;
   border-radius: 22px;
   height: 44px;
   width: 44px;
