@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // DOM Nodes
     this.contentNode = document.querySelector('.content');
     this.gridNode = this.contentNode.querySelector('.grid');
-    this.lightboxNode = document.querySelector('.lightbox-backdrop');
-    this.lightboxImageNode = this.lightboxNode.querySelector('img');
+    this.lightboxNode = document.querySelector('.lightbox');
+    this.lightboxImageNode = this.lightboxNode.querySelector('.lightbox-image');
 
     // Initialize Application State
     this.selectedIndex = 0;
@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
   App.prototype.generateImageTileTemplate = function (image, index) {
     // Returns template for tiles with thumbnail size images
     return (
-      '<div class="image-tile" data-index="' + index + '">' +
-        '<img class="hidden" src="' + image.url_t + '" height="' + image.height_t + '" width=' + image.width_t + '" alt="' + this.trimAltText(image.title) + '">' +
+      '<div class="tile" data-index="' + index + '">' +
+        '<img class="tile-image hidden" src="' + image.url_t + '" height="' + image.height_t + '" width=' + image.width_t + '" alt="' + this.trimAltText(image.title) + '">' +
       '</div>'
     );
   };
@@ -70,7 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Use capturing phase to delegate
     this.gridNode.addEventListener('load', function (ev) {
       var imageNode = ev.target;
-      imageNode.classList.remove('hidden');
+      if (imageNode.matches('.hidden')) {
+        imageNode.classList.remove('hidden');
+      }
     }, true);
 
     // Open Lightbox With Clicked Image Selected
@@ -78,9 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var target = ev.target;
       var tileNode;
 
-      if (target.matches('img')) {
+      if (target.matches('.tile-image')) {
         tileNode = target.parentNode;
-      } else if (target.matches('.image-tile')) {
+      } else if (target.matches('.tile')) {
         tileNode = target;
       } else {
         return;
@@ -96,14 +98,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target === currentTarget || target.parentNode === currentTarget) {
         // Close lightbox when clicking on it
         this.toggleLightbox();
-      } else if (target.matches('.prev')) {
+      } else if (target.matches('.lightbox-prev')) {
         // Go to previous image or loop to the end
         if (this.selectedIndex === 0) {
           this.selectLightboxImage(this.imageCount - 1);
         } else {
           this.selectLightboxImage(this.selectedIndex - 1);
         }
-      } else if (target.matches('.next')) {
+      } else if (target.matches('.lightbox-next')) {
         // Go to next image or loop to the beginning
         if (this.selectedIndex === this.imageCount - 1) {
           this.selectLightboxImage(0);
@@ -154,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
     apiKey: '2b7873498ef5d013f601c53d9dff05f2',
     baseUrl: `https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&extras=url_t,url_m,url_o`,
     imageCount: 150,
-    searchQuery: 'dinosaur'
+    searchQuery: 'olympics'
   };
   var app = new App(configs);
   app.init();

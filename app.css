@@ -1,10 +1,8 @@
-body {
-  margin: 0;
-}
 * {
   box-sizing: border-box;
 }
 .body {
+  margin: 0;
   color: #2b2c28;
 }
 .header {
@@ -53,7 +51,7 @@ body {
 .content.error .message {
   display: block;
 }
-.image-tile {
+.tile {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,23 +63,23 @@ body {
   margin: 5px;
   box-shadow: 6px 10px 28px 0px rgba(0,0,0,0.5);
 }
-.image-container {
+.lightbox-image-wrapper {
   width: 668px;
   height: 500px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-img {
-  max-width: 500px;
-  max-height: 500px;
+.thumbnail-image {
   transition: opacity 0.3s;
 }
-.image-container img {
-  box-shadow: 6px 10px 28px 10px rgba(0,0,0,0.5);
-}
-.hidden {
+.thumbnail-image.hidden {
   opacity: 0;
+}
+.lightbox-image {
+  max-width: 500px;
+  max-height: 500px;
+  box-shadow: 6px 10px 28px 10px rgba(0,0,0,0.5);
 }
 .body {
   display: flex;
@@ -97,10 +95,10 @@ img {
   background: #339989;
   border-top: 1px solid #2b2c28;
 }
-.lightbox-backdrop:not(.active) {
+.lightbox:not(.active) {
   display: none;
 }
-.lightbox-backdrop {
+.lightbox {
   position: fixed;
   top: 0;
   left: 0;
@@ -112,8 +110,8 @@ img {
   background: rgba(0,0,0,0.8);
   min-width: 668px;
 }
-.prev,
-.next {
+.lightbox-prev,
+.lightbox-next {
   font-size: 30px;
   background: #fffafb;
   border-radius: 22px;
