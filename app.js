@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Start App
   var configs = {
     apiKey: '2b7873498ef5d013f601c53d9dff05f2',
-    baseUrl: `https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&extras=url_t,url_m,url_o`,
+    baseUrl: 'https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&extras=url_t,url_m,url_o',
     imageCount: 150,
     searchQuery: 'olympics'
   };
