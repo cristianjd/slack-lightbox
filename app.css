@@ -12,7 +12,7 @@ body {
   text-align: center;
   background: #339989;
   border-bottom: 1px solid #2b2c28;
-  box-shadow: 6px 10px 28px 0px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);
   position: fixed;
   z-index: 1;
   height: 36px;
@@ -30,8 +30,28 @@ body {
   flex-wrap: wrap;
   justify-content: space-around;
 }
-.grid.loading {
+.message {
   display: none;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 48px;
+}
+.message-loading {
+  animation: loading 0.5s linear infinite alternate;
+}
+.error .message-loading {
+  display: none;
+}
+.content:not(.error) .message-error {
+  display: none;
+}
+.content.loading .grid,
+.content.error .grid {
+  display: none;
+}
+.content.loading .message,
+.content.error .message {
+  display: block;
 }
 .image-tile {
   display: flex;
@@ -103,4 +123,36 @@ img {
   text-align: center;
   cursor: pointer;
   box-shadow: 6px 10px 28px 10px rgba(0,0,0,0.5);
+}
+@-moz-keyframes loading {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes loading {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@-o-keyframes loading {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes loading {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

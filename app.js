@@ -1,115 +1,161 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // initialization
-  var API_KEY = '2b7873498ef5d013f601c53d9dff05f2';
-  var extras = '&extras=url_t,url_m,url_o';
-  var url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&per_page=100&text=olympics&api_key=' +  API_KEY + extras;
-  var apiImages = [];
-  var grid = document.querySelector('.grid');
-  var request = new XMLHttpRequest();
-  var lightboxEnabled = false;
-  var lightboxBackdrop = document.querySelector('.lightbox-backdrop');
-  var lightboxImage = lightboxBackdrop.querySelector('img');
-  var selectedIndex = 0;
-  var imageCount = 100;
+  var App = function (configs) {
+    // API Options
+    var options = configs || {};
+    this.baseUrl = options.baseUrl;
+    this.apiKey = options.apiKey;
+    this.searchQuery = options.searchQuery;
+    this.imageCount = options.imageCount;
 
-  request.onreadystatechange = function () {
-    if (request.readyState === 4 && request.status === 200) {
-      var responseObj = JSON.parse(request.responseText);
-      if (responseObj.stat === 'ok') {
-        apiImages = responseObj.photos.photo;
-        getImageUrls(apiImages);
-      } else {
-        alert(responseObj.message);
-      }
+    // DOM Nodes
+    this.contentNode = document.querySelector('.content');
+    this.gridNode = this.contentNode.querySelector('.grid');
+    this.lightboxNode = document.querySelector('.lightbox-backdrop');
+    this.lightboxImageNode = this.lightboxNode.querySelector('img');
+
+    // Initialize Application State
+    this.selectedIndex = 0;
+    this.lightboxEnabled = false;
+    this.apiImages = [];
+  };
+
+  App.prototype.toggleLightbox = function () {
+    this.lightboxEnabled = !this.lightboxEnabled;
+    this.lightboxNode.classList.toggle('active');
+  };
+
+  App.prototype.trimAltText = function (title) {
+    return title.substr(0, 100);
+  };
+
+  App.prototype.selectLightboxImage = function (index) {
+    var image = this.apiImages[index];
+    // in rare case that medium image is unavailable, default to original size
+    this.lightboxImageNode.src = image.url_m || image.url_o;
+    this.lightboxImageNode.alt = this.trimAltText(image.title);
+    this.selectedIndex = index;
+
+    if (!this.lightboxEnabled) {
+      this.toggleLightbox();
     }
   };
 
-  request.open('GET', url, true);
-  request.send();
+  App.prototype.showError = function (errorMessage) {
+    this.contentNode.classList.add('error');
+    console.log('Error: ' + errorMessage);
+  };
 
-  // create image templates
-  // maybe switch to document fragments??
-  var generateImageTile = function (photo, index) {
+  App.prototype.generateImageTileTemplate = function (image, index) {
+    // Returns template for tiles with thumbnail size images
     return (
       '<div class="image-tile" data-index="' + index + '">' +
-      '<img class="hidden" src="' + photo.url_t + '" height="' + photo.height_t + '" width=' + photo.width_t + '" alt="' + photo.title + '">' +
+        '<img class="hidden" src="' + image.url_t + '" height="' + image.height_t + '" width=' + image.width_t + '" alt="' + this.trimAltText(image.title) + '">' +
       '</div>'
     );
   };
 
-  var getImageUrls = function (photos) {
-      var imageHtml = [];
-      photos.forEach(function (photo, index) {
-        imageHtml.push(generateImageTile(photo, index));
-      });
-      grid.innerHTML = imageHtml.join("");
-      grid.classList.remove('loading');
+  App.prototype.processImages = function (images) {
+    // Append image tiles to DOM
+    var imageHtml = [];
+    images.forEach(function (image, index) {
+      imageHtml.push(this.generateImageTileTemplate(image, index));
+    }.bind(this));
+    this.apiImages = images;
+    this.gridNode.innerHTML = imageHtml.join("");
+    this.contentNode.classList.remove('loading');
   };
 
+  App.prototype.handleDOMEvents = function () {
+    // Fade in images as they are loaded
+    // Use capturing phase to delegate
+    this.gridNode.addEventListener('load', function (ev) {
+      var imageNode = ev.target;
+      imageNode.classList.remove('hidden');
+    }, true);
 
-  var enableLightbox = function () {
-    lightboxBackdrop.classList.add('active');
-    lightboxEnabled = true;
+    // Open Lightbox With Clicked Image Selected
+    this.gridNode.addEventListener('click', function (ev) {
+      var target = ev.target;
+      var tileNode;
+
+      if (target.matches('img')) {
+        tileNode = target.parentNode;
+      } else if (target.matches('.image-tile')) {
+        tileNode = target;
+      } else {
+        return;
+      }
+
+      var index = parseInt(tileNode.getAttribute('data-index'));
+      this.selectLightboxImage(index);
+    }.bind(this));
+
+    this.lightboxNode.addEventListener('click', function (ev) {
+      var target = ev.target;
+      var currentTarget = ev.currentTarget;
+      if (target === currentTarget || target.parentNode === currentTarget) {
+        // Close lightbox when clicking on it
+        this.toggleLightbox();
+      } else if (target.matches('.prev')) {
+        // Go to previous image or loop to the end
+        if (this.selectedIndex === 0) {
+          this.selectLightboxImage(this.imageCount - 1);
+        } else {
+          this.selectLightboxImage(this.selectedIndex - 1);
+        }
+      } else if (target.matches('.next')) {
+        // Go to next image or loop to the beginning
+        if (this.selectedIndex === this.imageCount - 1) {
+          this.selectLightboxImage(0);
+        } else {
+          this.selectLightboxImage(this.selectedIndex + 1);
+        }
+      }
+    }.bind(this));
   };
 
-  var disableLightBox = function () {
-    lightboxBackdrop.classList.remove('active');
-    lightboxEnabled = false;
+  App.prototype.requestImages = function (success, error) {
+    var request = new XMLHttpRequest();
+    // Contruct API URL from options
+    var url = this.baseUrl + '&text=' + this.searchQuery + '&per_page=' + this.imageCount + '&api_key=' + this.apiKey;
+
+    request.addEventListener("readystatechange", function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          var response;
+          try {
+            response = JSON.parse(request.responseText);
+          } catch (err) {
+            error.call(this, err.toString());
+            return;
+          }
+          if (response.stat === 'ok') {
+            success.call(this, response.photos.photo);
+          } else {
+            error.call(this, response.message);
+          }
+        } else {
+          error.call(this, 'API Error');
+        }
+      }
+    }.bind(this));
+
+    request.open('GET', url, true);
+    request.send();
   };
 
-  var selectImage = function (index) {
-    var image = apiImages[index];
-    lightboxImage.src = image.url_m || image.url_o;
-    lightboxImage.alt = image.title.substr(0, 100);
-    selectedIndex = index;
-
-    if (!lightboxEnabled) {
-      enableLightbox();
-    }
+  App.prototype.init = function () {
+    this.handleDOMEvents();
+    this.requestImages(this.processImages, this.showError);
   };
 
-
-  grid.addEventListener('click', function (ev) {
-    var target = ev.target;
-    var tileNode;
-
-    if (target.matches('img')) {
-      tileNode = target.parentNode;
-    } else if (target.matches('.image-tile')) {
-      tileNode = target;
-    } else {
-      return;
-    }
-
-    var index = parseInt(tileNode.getAttribute('data-index'));
-    selectImage(index);
-  });
-
-  lightboxBackdrop.querySelector('.prev').addEventListener('click', function () {
-    if (selectedIndex === 0) {
-      selectImage(imageCount - 1);
-    } else {
-      selectImage(selectedIndex - 1);
-    }
-  });
-
-  lightboxBackdrop.querySelector('.next').addEventListener('click', function () {
-    if (selectedIndex === imageCount - 1) {
-      selectImage(0);
-    } else {
-      selectImage(selectedIndex + 1);
-    }
-  });
-
-  lightboxBackdrop.addEventListener('click', function (ev) {
-    if (ev.target === this || ev.target.parentNode === this) {
-      disableLightBox();
-    }
-  });
-
-  // delegate image load events during capturing phase
-  document.addEventListener('load', function (ev) {
-    var imageNode = ev.target;
-    imageNode.classList.remove('hidden');
-  }, true);
+  // Start App
+  var configs = {
+    apiKey: '2b7873498ef5d013f601c53d9dff05f2',
+    baseUrl: `https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&extras=url_t,url_m,url_o`,
+    imageCount: 150,
+    searchQuery: 'dinosaur'
+  };
+  var app = new App(configs);
+  app.init();
 });
