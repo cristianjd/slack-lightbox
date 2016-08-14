@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" href="./app.css">
-  <script src="./app.js"></script>
-</head>
-<body class="body">
-  <header class="header">Slack Lightbox</header>
-  <section class="content loading">
-    <div class="grid">
+  <head>
+    <link rel="stylesheet" href="./app.css">
+    <script src="./app.js"></script>
+  </head>
+  <body class="body">
+    <header class="header">Slack Lightbox</header>
+    <section class="content loading">
+      <div class="grid">
+      </div>
+      <div class="message">
+        <p class="message-loading">Loading Images...</p>
+        <p class="message-error">There was an error retrieving images. Please try again later.</p>
+      </div>
+    </section>
+    <div class="lightbox">
+      <div class="lightbox-image-wrapper">
+        <span class="lightbox-prev">&laquo;</span>
+        <img class="lightbox-image" src="" alt="">
+        <span class="lightbox-next">&raquo;</span>
+      </div>
     </div>
-    <div class="message">
-      <p class="message-loading">Loading Images...</p>
-      <p class="message-error">There was an error retrieving images. Please try again later.</p>
-    </div>
-  </section>
-  <div class="lightbox">
-    <div class="lightbox-image-wrapper">
-      <span class="lightbox-prev">&laquo;</span>
-      <img class="lightbox-image" src="" alt="">
-      <span class="lightbox-next">&raquo;</span>
-    </div>
-  </div>
-  <footer class="footer">by Cristian Derr</footer>
-</body>
+    <footer class="footer">by Cristian Derr</footer>
+  </body>
 </html>

@@ -1,38 +1,56 @@
+// variables
+$color-light = #FFFAFB;
+$color-green = #339989;
+$color-dark = #2B2C28;
+$box-shadow-color = rgba(0,0,0,0.5);
+
+$header-height = 36px;
+$spacing-small = 5px;
+$spacing-large = 10px;
+$image-height-max = 500px;
+$image-wrapper-width = 668px;
+
 * {
   box-sizing: border-box;
 }
 
-// variables
-$tile-color = #FFFAFB;
-$color-2 = #7DE2D1;
-$color-3 = #2B2C28;
-$header-color = #339989;
-$text-color = #2B2C28;
-$box-shadow = 6px 10px 28px 0px rgba(0,0,0,0.5);
-
 .body {
+  display: flex;
+  flex-direction: column;
   margin: 0;
-  color: $text-color;
+  min-height: 100vh;
+  color: $color-dark;
 }
 
 .header {
-  font-size: 24px;
-  text-align: center;
-  background: $header-color;
-  border-bottom: 1px solid $text-color;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);;
   position: fixed;
-  z-index: 1;
-  height: 36px;
-  line-height: 36px;
   top: 0;
   left: 0;
   right: 0;
+  z-index: 1;
+  height: $header-height;
+  line-height: $header-height;
+  font-size: 24px;
+  text-align: center;
+  background: $color-green;
+  border-bottom: 1px solid $color-dark;
+  box-shadow: 0 2px 4px 0 $box-shadow-color;
 }
 
 .content {
-  background: $tile-color;
-  padding: 5px + 36px 10px 5px;
+  flex: 1;
+  padding: $spacing-small + $header-height $spacing-large $spacing-small;
+  background: $color-light;
+
+  &.loading, &.error {
+    .grid {
+      display: none;
+    }
+
+    .message {
+      display: block
+    }
+  }
 }
 
 .grid {
@@ -41,11 +59,32 @@ $box-shadow = 6px 10px 28px 0px rgba(0,0,0,0.5);
   justify-content: space-around;
 }
 
+.tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 110px;
+  width: @height;
+  margin: $spacing-small;
+  border-radius: 4px;
+  background: $color-light;
+  box-shadow: 6px 10px 28px 0 $box-shadow-color;
+  cursor: pointer;
+}
+
+.tile-image {
+  transition: opacity 0.3s;
+
+  &.hidden {
+    opacity: 0;
+  }
+}
+
 .message {
   display: none;
+  margin-top: 48px;
   text-align: center;
   font-size: 18px;
-  margin-top: 48px;
 }
 
 @keyframes loading {
@@ -70,99 +109,54 @@ $box-shadow = 6px 10px 28px 0px rgba(0,0,0,0.5);
   display: none;
 }
 
-.content {
-  &.loading, &.error {
-    .grid {
-      display: none;
-    }
-
-    .message {
-      display: block
-    }
-  }
-}
-
-.tile {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 110px;
-  width: 110px;
-  cursor: pointer;
-  background: $tile-color;
-  border-radius: 4px;
-  margin: 5px;
-  box-shadow: $box-shadow;
-}
-
-.lightbox-image-wrapper {
-  width: 668px;
-  height: 500px;
-
-  display: flex;
-  justify-content: space-between;;
-  align-items: center;
-}
-
-.thumbnail-image {
-  transition: opacity 0.3s;
-
-  &.hidden {
-    opacity: 0;
-  }
-}
-
-.lightbox-image {
-  max-width: 500px;
-  max-height: 500px;
-  box-shadow: 6px 10px 28px 10px rgba(0,0,0,0.5);
-}
-
-
-.body {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-}
-
-.content {
-  flex: 1;
-}
-
-.footer {
-  font-size: 12px;
-  text-align: center;
-  background: $header-color;
-  border-top: 1px solid $text-color;
-}
-
-.lightbox:not(.active) {
-  display: none;
-}
-
 .lightbox {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
+  min-width: $image-wrapper-width;
   background: rgba(0, 0, 0, 0.8);
-  min-width: 668px;
+
+  &:not(.active) {
+    display: none;
+  }
+}
+
+.lightbox-image-wrapper {
+  display: flex;
+  justify-content: space-between;;
+  align-items: center;
+  height: $image-height-max;
+  width: $image-wrapper-width;
+}
+
+.lightbox-image {
+  max-height: $image-height-max;
+  max-width: @max-height;
 }
 
 .lightbox-prev, .lightbox-next {
-  font-size: 30px;
-  background: $tile-color;
-  border-radius: 22px;
   height: 44px;
-  width: 44px;
+  width: @height;
   line-height: 40px;
+  border-radius: 50%;
   text-align: center;
+  font-size: 30px;
+  background: $color-light;
   cursor: pointer;
-  box-shadow: 6px 10px 28px 10px rgba(0,0,0,0.5);
+}
+
+.lightbox-image, .lightbox-prev, .lightbox-next {
+  box-shadow: 6px 10px 28px 10px $box-shadow-color;
+}
+
+.footer {
+  border-top: 1px solid $color-dark;
+  font-size: 12px;
+  text-align: center;
+  background: $color-green;
 }
