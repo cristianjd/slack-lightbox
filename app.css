@@ -5,7 +5,6 @@
   display: flex;
   flex-direction: column;
   margin: 0;
-  min-height: 100vh;
   color: #2b2c28;
 }
 .header {
@@ -23,7 +22,6 @@
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.5);
 }
 .content {
-  flex: 1;
   padding: 41px 10px 5px;
   background: #fffafb;
 }
@@ -82,6 +80,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
   min-width: 668px;
   background: rgba(0,0,0,0.8);
 }
@@ -120,6 +119,9 @@
   font-size: 12px;
   text-align: center;
   background: #339989;
+}
+.loading ~ .footer {
+  display: none;
 }
 @-moz-keyframes loading {
   from {

@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
   App.prototype.toggleLightbox = function () {
     this.lightboxEnabled = !this.lightboxEnabled;
     this.lightboxNode.classList.toggle('active');
+    if (!this.lightboxEnabled) {
+      // remove source to prevent flickering on IE
+      this.lightboxImageNode.src = '';
+    }
   };
 
   App.prototype.trimAltText = function (title) {
@@ -70,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Use capturing phase to delegate
     this.gridNode.addEventListener('load', function (ev) {
       var imageNode = ev.target;
-      if (imageNode.matches('.hidden')) {
+      if (imageNode.classList.contains('hidden')) {
         imageNode.classList.remove('hidden');
       }
     }, true);
@@ -80,9 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var target = ev.target;
       var tileNode;
 
-      if (target.matches('.tile-image')) {
+      if (target.classList.contains('tile-image')) {
         tileNode = target.parentNode;
-      } else if (target.matches('.tile')) {
+      } else if (target.classList.contains('tile')) {
         tileNode = target;
       } else {
         return;
@@ -98,14 +102,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target === currentTarget || target.parentNode === currentTarget) {
         // Close lightbox when clicking on it
         this.toggleLightbox();
-      } else if (target.matches('.lightbox-prev')) {
+      } else if (target.classList.contains('lightbox-prev')) {
         // Go to previous image or loop to the end
         if (this.selectedIndex === 0) {
           this.selectLightboxImage(this.imageCount - 1);
         } else {
           this.selectLightboxImage(this.selectedIndex - 1);
         }
-      } else if (target.matches('.lightbox-next')) {
+      } else if (target.classList.contains('lightbox-next')) {
         // Go to next image or loop to the beginning
         if (this.selectedIndex === this.imageCount - 1) {
           this.selectLightboxImage(0);
